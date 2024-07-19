@@ -12,6 +12,12 @@ class BooksController < ApplicationController
     end
   end
 
+  def destroy
+    Book.find(params[:id]).destroy!
+
+    head :no_content # 204
+  end
+
   private
 
   def book_params
