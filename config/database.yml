@@ -24,6 +24,10 @@ default: &default
 development:
   <<: *default
   database: book_store_development
+  host: <%= ENV.fetch("DB_HOST") %>
+  username: <%= ENV.fetch("DB_USERNAME") %>
+  password: <%= ENV.fetch("DB_PASSWORD") %>
+  port: <%= ENV.fetch("DB_PORT") %>
 
   # The specified database role being used to connect to postgres.
   # To create additional roles in postgres see `$ createuser --help`.
