@@ -8,7 +8,7 @@ class BooksController < ApplicationController
     if book.save
       render json: book, status: :created # 201
     else
-      render json: book.erros, status: :unprocessable_entity # 422
+      render json: book.errors, status: :unprocessable_entity # 422
     end
   end
 
