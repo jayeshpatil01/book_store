@@ -1,17 +1,28 @@
 require 'rails_helper'
 
 describe 'Books API', type: :request do
+  let(:author1) { FactoryBot.create(:author, first_name: 'George', last_name: 'Orwell', age: 48) }
+  let(:author2) { FactoryBot.create(:author, first_name: 'H.G.', last_name: 'Wells', age: 78) }
+
   describe 'GET /books' do
     before do
-      FactoryBot.create(:book, title: '1984', author: 'George Orwell')
-      FactoryBot.create(:book, title: 'The Time machine', author: 'H.G. Wells')
+      FactoryBot.create(:book, title: '1984', author: author1)
+      FactoryBot.create(:book, title: 'The Time machine', author: author2)
     end
 
     it 'returns all the books' do
       get '/api/v1/books'
   
       expect(response).to have_http_status(:success)
-      expect(JSON.parse(response.body).size).to eq(2)
+      expect(response_body.size).to eq(2)
+      expect(response_body).to include(
+        {
+          "id" => Book.first.id,
+          "title" => '1984',
+          "author_name" => 'George Orwell',
+          "author_age" => 48
+        }
+      )
     end
   end
 
@@ -25,12 +36,20 @@ describe 'Books API', type: :request do
       }.to change { Book.count }.from(0).to(1)
 
       expect(response).to have_http_status(:created)
-      expect(Author.cout).to eq(1)
+      expect(Author.count).to eq(1)
+      expect(response_body).to eq(
+        {
+          "id" => Book.first.id,
+          "title" => 'The Martian',
+          "author_name" => 'Andy Weir',
+          "author_age" => 48
+        }
+      )
     end
   end
 
   describe 'DELETE /books/:id' do
-    let!(:book) { FactoryBot.create(:book, title: '1984', author: 'George Orwell') }
+    let!(:book) { FactoryBot.create(:book, title: '1984', author: author1) }
     it 'deletes a book' do
       expect {
           delete "/api/v1/books/#{book.id}"
