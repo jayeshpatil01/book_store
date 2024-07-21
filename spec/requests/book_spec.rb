@@ -60,10 +60,12 @@ describe 'Books API', type: :request do
     it 'creats a new book' do
       user = FactoryBot.create(:user, username: 'test1', password: 'test1')
       expect {
-          post '/api/v1/books', params: {
+          post '/api/v1/books',
+          params: {
             book: {title: 'The Martian'},
             author: {first_name: 'Andy', last_name: 'Weir', age: '48'}
-    }, headers: { "Authorization" => "Bearer #{AuthenticationTokenService.call(user.id)}" }
+          },
+          headers: { "Authorization" => "Bearer #{AuthenticationTokenService.encode(user.id)}" }
       }.to change { Book.count }.from(0).to(1)
 
       expect(response).to have_http_status(:created)
@@ -81,9 +83,11 @@ describe 'Books API', type: :request do
 
   describe 'DELETE /books/:id' do
     let!(:book) { FactoryBot.create(:book, title: '1984', author: author1) }
+    let!(:user) { FactoryBot.create(:user, username: 'test1', password: 'test1') }
     it 'deletes a book' do
       expect {
-          delete "/api/v1/books/#{book.id}"
+          delete "/api/v1/books/#{book.id}",
+          headers: { "Authorization" => "Bearer #{AuthenticationTokenService.encode(user.id)}" }
       }.to change {Book.count}.from(1).to(0)
 
       expect(response).to have_http_status(:no_content)
